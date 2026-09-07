@@ -1,5 +1,7 @@
 # amba
 
+![maturity](https://img.shields.io/badge/maturity-simulated-yellow) ![license](https://img.shields.io/badge/license-Apache--2.0-blue)
+
 AMBA protocol suite in Bluespec: pin-level interfaces and binders that attach a
 bus-neutral `RegIf` (from `hwcore`) to real bus pins.
 
@@ -35,4 +37,4 @@ segment. Our own IPs need no bridge, since the bus is chosen at bind time.
 
 ## License
 
-Mulan PSL v2.
+Apache License 2.0.
