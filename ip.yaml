@@ -1,0 +1,26 @@
+name: amba
+version: 0.1.0
+spec: '0.1'
+kind: library
+identity:
+  slug: amba-tapeout-bsv
+  display_name: AMBA bindings for the neutral register contract
+  summary: The only place in the library that knows what APB4 looks like.
+  category: infrastructure
+  maturity: simulated
+deps:
+  hwcore: ^0.1
+area:
+  base:
+    fixed: 90.44
+  model: single-point
+  error:
+    bound: 0.05
+    sign: over
+    note: mkApb4Bind measured with a combinational RegIf stub, so the figure carries
+      the stub's own logic and leans high
+  corner:
+    tool: ecc
+    pdk: ics55
+    freq_mhz: 100
+    measured: '2026-09-08'
