@@ -68,4 +68,66 @@ module mkApb4Adopt#(Apb4SlavePins#(aw, dw) sl)(RegIf#(aw, dw));
   endmethod
 endmodule
 
+// 片上有别的发起方时用这一个。零等待的 mkApb4Bind 在方法里直接调 access，
+// 而那个方法是 always_enabled 的——它会把仲裁规则永久挡住，bsc 判「规则永不
+// 触发」。所以这里把请求锁进寄存器，自己变成一个普通发起方去排队，
+// 排到之前用 PREADY 把总线拖着。APB4 本来就允许拖。
+interface Apb4Manager#(numeric type aw, numeric type dw);
+  interface Apb4SlavePins#(aw, dw) pins;
+  interface RegManager#(aw, dw)    mgr;
+endinterface
+
+module mkApb4Manager(Apb4Manager#(aw, dw));
+  Reg#(Bool)             busy  <- mkReg(False);
+  Reg#(Bool)             fin   <- mkReg(False);
+  Reg#(RegReq#(aw, dw))  held  <- mkReg(unpack(0));
+  Reg#(Bit#(dw))         rdataR <- mkReg(0);
+  Reg#(Bool)             errR  <- mkReg(False);
+  Wire#(Bool)            gnt   <- mkBypassWire;
+  Wire#(Bool)            rspV  <- mkBypassWire;
+  Wire#(RegRsp#(dw))     rspX  <- mkBypassWire;
+  PulseWire              start <- mkPulseWire;
+  Wire#(RegReq#(aw, dw)) sreq  <- mkDWire(unpack(0));
+
+  rule launch (start && !busy && !fin);
+    held <= sreq;
+    busy <= True;
+  endrule
+
+  rule collect (busy && rspV);
+    rdataR <= rspX.rdata;
+    errR   <= rspX.err;
+    busy   <= False;
+    fin    <= True;
+  endrule
+
+  // PREADY 抬起来那一拍总线就走了，标记随即清掉
+  rule retire (fin && !start);
+    fin <= False;
+  endrule
+
+  interface Apb4SlavePins pins;
+    method Action req(paddr, pprot, psel, penable, pwrite, pwdata, pstrb);
+      if (psel && penable && !busy && !fin) begin
+        start.send();
+        sreq <= RegReq { addr: paddr, write: pwrite,
+                         wdata: pwdata, wstrb: pstrb };
+      end
+    endmethod
+    method Bool     pready  = fin;
+    method Bit#(dw) prdata  = rdataR;
+    method Bool     pslverr = errR;
+  endinterface
+
+  interface RegManager mgr;
+    method Bool valid = busy;
+    method RegReq#(aw, dw) req = held;
+    method Action ready(Bool v); gnt._write(v); endmethod
+    method Action resp(Bool v, RegRsp#(dw) x);
+      rspV._write(v);
+      rspX._write(x);
+    endmethod
+  endinterface
+endmodule
+
 endpackage
