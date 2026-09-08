@@ -23,4 +23,5 @@ area:
     tool: ecc
     pdk: ics55
     freq_mhz: 100
-    measured: '2026-09-08'
+    measured: '2026-09-09'
+    gen_digest: sha256:4f4ad63daf8aaade
