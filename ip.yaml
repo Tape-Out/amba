@@ -14,14 +14,22 @@ area:
   probe:
     module: mkApb4BindProbe
     src: tb/Probe.bsv
+    # 只核对、不写回：探针量的是绑定器配一个桩、孤立综合的代价，那是下界。
+    check: true
   base:
-    fixed: 17.92
+    fixed: 100.0
   model: single-point
   error:
     bound: 0.05
     sign: over
-    note: mkApb4Bind measured with a combinational RegIf stub, so the figure 
-      carries the stub's own logic and leans high
+    note: the price must cover what the binder costs in place, which is the
+      wrap measured minus the neutral top measured. Four IPs give plus 85.40
+      for uart, plus 71.96 for gpio, plus 96.04 for wdt and minus 242.20 for
+      rtc, where a neutral top has to carry the whole register interface out
+      to ports and synthesis cannot touch it. A single figure can only be the
+      upper bound of that spread, so it is 100. The probe in tb measures the
+      binder on its own against a stub and gives 17.92, which is a lower
+      bound and is checked rather than written back
   corner:
     tool: ecc
     pdk: ics55
