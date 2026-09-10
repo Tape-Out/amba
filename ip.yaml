@@ -11,17 +11,21 @@ identity:
 deps:
   hwcore: ^0.1
 area:
+  probe:
+    module: mkApb4BindProbe
+    src: tb/Probe.bsv
   base:
-    fixed: 90.44
+    fixed: 17.92
   model: single-point
   error:
     bound: 0.05
     sign: over
-    note: mkApb4Bind measured with a combinational RegIf stub, so the figure carries
-      the stub's own logic and leans high
+    note: mkApb4Bind measured with a combinational RegIf stub, so the figure 
+      carries the stub's own logic and leans high
   corner:
     tool: ecc
     pdk: ics55
     freq_mhz: 100
-    measured: '2026-09-09'
-    gen_digest: sha256:4f4ad63daf8aaade
+    measured: '2026-09-11'
+    toolchain: bsc 2026.01 · yosys 0.68+195 · ecc 0.1.0a11
+    gen_digest: sha256:c840f85098be5e33
