@@ -1,6 +1,7 @@
 package Apb4;
 
 import RegIf::*;
+import Bus::*;
 
 // AMBA APB4（ARM IHI 0024）：两拍时序 SETUP -> ACCESS，传输在 ACCESS 且 PREADY 时完成。
 // 相对 APB3 增加 PSTRB 字节选通与 PPROT 保护属性。
@@ -194,5 +195,10 @@ module mkApb4Manager(Apb4Manager#(aw, dw));
     endmethod
   endinterface
 endmodule
+
+instance Bus#(Apb4SlavePins#(aw, dw), aw, dw);
+  function Module#(Apb4SlavePins#(aw, dw)) bindT(RegTarget#(aw, dw) t) = mkApb4BindT(t);
+  function Module#(RegTarget#(aw, dw)) adopt(Apb4SlavePins#(aw, dw) p) = mkApb4Adopt(p);
+endinstance
 
 endpackage
