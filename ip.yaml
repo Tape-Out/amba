@@ -13,7 +13,7 @@ deps:
 area:
   probe:
     module: mkApb4BindProbe
-    src: tb/Probe.bsv
+    src: htest/Probe.bsv
     # 只核对、不写回：探针量的是绑定器配一个桩、孤立综合的代价，那是下界。
     check: true
   base:
