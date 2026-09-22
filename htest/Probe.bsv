@@ -1,5 +1,7 @@
 package Probe;
 
+import AmbaCfg::*;
+
 import RegIf::*;
 import Apb4::*;
 
@@ -9,9 +11,9 @@ import Apb4::*;
 // 探针存在的理由是**手工量过的数字必须留下配方**：`amba` 的 90.44 量过一次就
 // 再没人能重现，源码一改摘要就过期，而过期之后没有任何命令能把它测回来。
 (* synthesize *)
-module mkApb4BindProbe(Apb4SlavePins#(8, 32));
-  RegIf#(8, 32) stub = interface RegIf;
-      method ActionValue#(RegRsp#(32)) access(RegReq#(8, 32) r);
+module mkApb4BindProbe(Apb4SlavePins#(AW, DW));
+  RegIf#(AW, DW) stub = interface RegIf;
+      method ActionValue#(RegRsp#(DW)) access(RegReq#(AW, DW) r);
         return RegRsp { rdata: zeroExtend(r.addr), err: False };
       endmethod
     endinterface;

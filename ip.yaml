@@ -14,7 +14,6 @@ area:
   probe:
     module: mkApb4BindProbe
     src: htest/Probe.bsv
-    # 只核对、不写回：探针量的是绑定器配一个桩、孤立综合的代价，那是下界。
     check: true
   base:
     fixed: 100.0
@@ -22,14 +21,9 @@ area:
   error:
     bound: 0.05
     sign: over
-    note: the price must cover what the binder costs in place, which is the
-      wrap measured minus the neutral top measured. Four IPs give plus 85.40
-      for uart, plus 71.96 for gpio, plus 96.04 for wdt and minus 242.20 for
-      rtc, where a neutral top has to carry the whole register interface out
-      to ports and synthesis cannot touch it. A single figure can only be the
-      upper bound of that spread, so it is 100. The probe in tb measures the
-      binder on its own against a stub and gives 17.92, which is a lower
-      bound and is checked rather than written back
+    note: the price must cover what the binder costs in place, which is the wrap measured minus the neutral top measured. Four IPs give plus 85.40 for uart, plus 71.96 for gpio, plus 96.04 for wdt and minus
+      242.20 for rtc, where a neutral top has to carry the whole register interface out to ports and synthesis cannot touch it. A single figure can only be the upper bound of that spread, so it is 100.
+      The probe in tb measures the binder on its own against a stub and gives 17.92, which is a lower bound and is checked rather than written back
   corner:
     tool: ecc
     pdk: ics55
@@ -37,3 +31,22 @@ area:
     measured: '2026-09-16'
     toolchain: bsc 2026.01 · yosys 0.68+195 · ecc 0.1.0a11
     gen_digest: sha256:33178e6d3773a851
+params:
+  aw:
+    type: choice
+    values:
+    - 8
+    - 12
+    - 16
+    - 32
+    default: 8
+  dw:
+    type: choice
+    values:
+    - 32
+    - 64
+    default: 32
+test:
+  noarea:
+  - aw
+  - dw
